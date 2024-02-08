@@ -6,6 +6,7 @@ public class User
 {
     public Guid Id { get; init; } = Guid.NewGuid();
     public string Login { get; set; }
+    public string PasswordHash { get; set; }
     public string? PhoneNumber { get; set; }
     public virtual ICollection<Party> MemberParties { get; set; }
     public virtual ICollection<FriendRequest> SentRequests { get; set; }

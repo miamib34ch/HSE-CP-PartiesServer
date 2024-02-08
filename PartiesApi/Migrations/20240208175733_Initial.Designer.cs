@@ -12,7 +12,7 @@ using PartiesApi.Database;
 namespace PartiesApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240203110932_Initial")]
+    [Migration("20240208175733_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -121,6 +121,10 @@ namespace PartiesApi.Migrations
                         .HasColumnType("uuid");
 
                     b.Property<string>("Login")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("text");
 
