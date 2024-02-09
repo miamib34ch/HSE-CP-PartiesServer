@@ -33,16 +33,32 @@ public class AuthService(IUserService userService, IJwtService jwtService) : IAu
         return successAuthResult;
     }
 
-    public Task<AuthResult> LoginAsync(string login, string password)
+    public async Task<AuthResult> LoginAsync(string login, string password)
     {
-        /* var isPasswordValid = await userService.CheckUserPasswordAsync(login, password);
+        var isUserExist = await userService.CheckUserExistenceAsync(login);
+        if (!isUserExist)
+            return new AuthResult()
+            {
+                IsSuccess = false,
+                Error = "User with this login is not found. Please register first"
+            };
+
+        var isPasswordValid = await userService.CheckUserPasswordAsync(login, password);
         if (!isPasswordValid)
             return new AuthResult()
             {
                 IsSuccess = false,
                 Error = "Login or password is incorrect"
-            }; */
-        
-        throw new NotImplementedException();
+            };
+
+        var token = jwtService.GenerateToken(login);
+
+        var successAuthResult = new AuthResult()
+        {
+            IsSuccess = true,
+            AccessToken = token
+        };
+
+        return successAuthResult;
     }
 }

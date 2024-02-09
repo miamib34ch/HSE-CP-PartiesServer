@@ -7,11 +7,7 @@ namespace PartiesApi.Controllers;
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/[controller]")]
-public class PingController : ControllerBase
+public class PartyController : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> RegisterAsync()
-    {
-        return Ok("pong");
-    }
+    
 }
