@@ -19,17 +19,17 @@ internal class UserRepository(ApplicationDbContext dbContext) : IUserRepository
         }
     }
 
-    public async Task<bool> AddUserAsync(Models.User user)
+    public async Task<Models.User?> AddUserAsync(Models.User user)
     {
         try
         {
             var createdUser = await dbContext.Users.AddAsync(user);
 
-            return createdUser.State == EntityState.Added;
+            return createdUser.Entity;
         }
         catch (Exception e)
         {
-            return false;
+            return null;
         }
         finally
         {

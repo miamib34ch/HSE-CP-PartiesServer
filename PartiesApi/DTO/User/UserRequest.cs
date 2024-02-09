@@ -1,4 +1,4 @@
-namespace PartiesApi.DTO.Auth;
+namespace PartiesApi.DTO.User;
 
 public record UserRequest
 {

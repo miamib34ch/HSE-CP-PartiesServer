@@ -82,6 +82,8 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddSingleton(tokenValidationParams);
 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IJwtService, JwtService>();

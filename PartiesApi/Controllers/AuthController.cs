@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PartiesApi.DTO.Auth;
+using PartiesApi.DTO.User;
 using PartiesApi.Services.Auth;
 
 namespace PartiesApi.Controllers;

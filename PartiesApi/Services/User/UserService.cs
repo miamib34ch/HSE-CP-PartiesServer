@@ -20,7 +20,7 @@ internal class UserService(IUserRepository userRepository) : IUserService
         return user != null && passwordHash == user.PasswordHash;
     }
 
-    public async Task<bool> CreateUserAsync(string login, string password)
+    public async Task<Models.User?> CreateUserAsync(string login, string password)
     {
         var passwordHash = StringHasher.GetSha256Hash(password);
 
@@ -30,14 +30,21 @@ internal class UserService(IUserRepository userRepository) : IUserService
             PasswordHash = passwordHash
         };
 
-        var isUserCreated = await userRepository.AddUserAsync(user);
+        var createdUser = await userRepository.AddUserAsync(user);
 
-        return isUserCreated;
+        return createdUser;
     }
 
     public async Task<Models.User?> GetUserOrDefaultAsync(Guid userId)
     {
         var user = await userRepository.GetUserOrDefaultAsync(userId);
+
+        return user;
+    }
+
+    public async Task<Models.User?> GetUserOrDefaultAsync(string userLogin)
+    {
+        var user = await userRepository.GetUserOrDefaultAsync(userLogin);
 
         return user;
     }

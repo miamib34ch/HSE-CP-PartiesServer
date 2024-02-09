@@ -17,12 +17,11 @@ internal class AuthService(IUserService userService, IJwtService jwtService) : I
                 Error = "User with this login is already registered"
             };
 
-        var token = jwtService.GenerateToken(login);
-
-        var userCreated = await userService.CreateUserAsync(login, password);
-
-        if (!userCreated)
+        var createdUser = await userService.CreateUserAsync(login, password);
+        if (createdUser == null)
             throw new UserNotCreatedException();
+
+        var token = jwtService.GenerateToken(createdUser.Id.ToString());
 
         var successAuthResult = new AuthResult()
         {
@@ -35,8 +34,8 @@ internal class AuthService(IUserService userService, IJwtService jwtService) : I
 
     public async Task<AuthResult> LoginAsync(string login, string password)
     {
-        var isUserExist = await userService.CheckUserExistenceAsync(login);
-        if (!isUserExist)
+        var user = await userService.GetUserOrDefaultAsync(login);
+        if (user == null)
             return new AuthResult()
             {
                 IsSuccess = false,
@@ -51,7 +50,7 @@ internal class AuthService(IUserService userService, IJwtService jwtService) : I
                 Error = "Login or password is incorrect"
             };
 
-        var token = jwtService.GenerateToken(login);
+        var token = jwtService.GenerateToken(user.Id.ToString());
 
         var successAuthResult = new AuthResult()
         {
