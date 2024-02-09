@@ -3,7 +3,7 @@ using PartiesApi.Utils;
 
 namespace PartiesApi.Services.User;
 
-public class UserService(IUserRepository userRepository) : IUserService
+internal class UserService(IUserRepository userRepository) : IUserService
 {
     public async Task<bool> CheckUserExistenceAsync(string userLogin)
     {

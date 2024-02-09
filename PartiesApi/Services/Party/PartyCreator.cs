@@ -3,10 +3,11 @@ using PartiesApi.Exceptions;
 using PartiesApi.Services.DressCode;
 using PartiesApi.Services.PartyRule;
 using PartiesApi.Services.User;
+using PartiesApi.Utils;
 
 namespace PartiesApi.Services.Party;
 
-public class PartyCreator(IDressCodeService dressCodeService, IUserService userService,
+internal class PartyCreator(IDressCodeService dressCodeService, IUserService userService,
     IPartyRuleService partyRuleService)
 {
     public async Task<Models.Party> CreatePartyAsync(PartyRequest partyRequest)
@@ -20,10 +21,10 @@ public class PartyCreator(IDressCodeService dressCodeService, IUserService userS
             newParty.Organizer = await GetOrganizerAsync(partyRequest.OrganizerId);
 
         if (partyRequest.PartyMembersIds != null)
-            newParty.PartyMembers = await GetPartyUsersAsync(partyRequest.PartyMembersIds, "Member");
+            newParty.PartyMembers = await GetPartyUsersAsync(partyRequest.PartyMembersIds, PartyRole.Member);
 
         if (partyRequest.PartyEditorsIds != null)
-            newParty.PartyEditors = await GetPartyUsersAsync(partyRequest.PartyEditorsIds, "Editor");
+            newParty.PartyEditors = await GetPartyUsersAsync(partyRequest.PartyEditorsIds, PartyRole.Editor);
 
         if (partyRequest.PartyRulesIds != null)
             newParty.PartyRules = await GetPartyRulesAsync(partyRequest.PartyRulesIds);
@@ -57,12 +58,13 @@ public class PartyCreator(IDressCodeService dressCodeService, IUserService userS
         var organizer = await userService.GetUserOrDefaultAsync(organizerId);
 
         if (organizer == null)
-            throw new ElementNotFoundException("Organizer", organizerId);
+            throw new ElementNotFoundException($"{EnumDescriptionReader.GetEnumDescription(PartyRole.Organizer)}",
+                organizerId);
 
         return organizer;
     }
 
-    private async Task<IList<Models.User>> GetPartyUsersAsync(IEnumerable<Guid> partyMemberIds, string roleName)
+    private async Task<IList<Models.User>> GetPartyUsersAsync(IEnumerable<Guid> partyMemberIds, PartyRole partyRole)
     {
         var partyMembers = new List<Models.User>();
 
@@ -71,7 +73,8 @@ public class PartyCreator(IDressCodeService dressCodeService, IUserService userS
             var partyMember = await userService.GetUserOrDefaultAsync(partyMemberId);
 
             if (partyMember == null)
-                throw new ElementNotFoundException($"Party {roleName}", partyMemberId);
+                throw new ElementNotFoundException($"Party {EnumDescriptionReader.GetEnumDescription(partyRole)}",
+                    partyMemberId);
 
             partyMembers.Add(partyMember);
         }

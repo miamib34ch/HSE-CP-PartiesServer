@@ -3,7 +3,7 @@ using PartiesApi.Models;
 
 namespace PartiesApi.Database;
 
-public class ApplicationDbContext : DbContext
+internal class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
     {

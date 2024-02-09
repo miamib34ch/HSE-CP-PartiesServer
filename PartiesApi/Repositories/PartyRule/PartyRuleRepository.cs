@@ -3,7 +3,7 @@ using PartiesApi.Database;
 
 namespace PartiesApi.Repositories.PartyRule;
 
-public class PartyRuleRepository(ApplicationDbContext dbContext) : IPartyRuleRepository
+internal class PartyRuleRepository(ApplicationDbContext dbContext) : IPartyRuleRepository
 {
     public async Task<Models.PartyRule?> GetPartyRuleOrDefaultAsync(Guid partyRuleId)
     {

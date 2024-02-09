@@ -4,7 +4,7 @@ using PartiesApi.Models;
 
 namespace PartiesApi.Repositories.DressCodeRepository;
 
-public class DressCodeRepository(ApplicationDbContext dbContext) : IDressCodeRepository
+internal class DressCodeRepository(ApplicationDbContext dbContext) : IDressCodeRepository
 {
     public async Task<DressCode?> GetDressCodeOrDefaultAsync(Guid dressCodeId)
     {

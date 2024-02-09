@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace PartiesApi.Models;
 
-public class Party
+internal class Party
 {
     public Guid Id { get; init; } = Guid.NewGuid();
     public string? Name { get; set; }

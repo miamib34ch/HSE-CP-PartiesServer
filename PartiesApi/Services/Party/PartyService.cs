@@ -8,7 +8,7 @@ using PartiesApi.Services.User;
 
 namespace PartiesApi.Services.Party;
 
-public class PartyService(IPartyRepository partyRepository, IDressCodeService dressCodeService,
+internal class PartyService(IPartyRepository partyRepository, IDressCodeService dressCodeService,
     IUserService userService, IPartyRuleService partyRuleService) : IPartyService
 {
     private readonly PartyCreator _partyCreator = new(dressCodeService, userService, partyRuleService);

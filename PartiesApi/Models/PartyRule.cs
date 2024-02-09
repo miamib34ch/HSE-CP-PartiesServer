@@ -1,6 +1,6 @@
 namespace PartiesApi.Models;
 
-public class PartyRule
+internal class PartyRule
 {
     public Guid Id { get; init; } = Guid.NewGuid();
     public string Description { get; set; }

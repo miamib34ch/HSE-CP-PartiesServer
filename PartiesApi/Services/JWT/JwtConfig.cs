@@ -1,6 +1,6 @@
 namespace PartiesApi.Services.JWT;
 
-public record JwtConfig
+internal record JwtConfig
 {
     public string? Secret { get; init; }
 }

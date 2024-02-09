@@ -1,6 +1,6 @@
 namespace PartiesApi.Repositories.Party;
 
-public interface IPartyRepository
+internal interface IPartyRepository
 {
     Task<bool> AddPartyAsync(Models.Party newParty);
 }

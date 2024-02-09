@@ -3,7 +3,7 @@ using PartiesApi.Database;
 
 namespace PartiesApi.Repositories.Party;
 
-public class PartyRepository(ApplicationDbContext dbContext) : IPartyRepository
+internal class PartyRepository(ApplicationDbContext dbContext) : IPartyRepository
 {
     public async Task<bool> AddPartyAsync(Models.Party newParty)
     {

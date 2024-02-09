@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace PartiesApi.Models;
 
-public class User
+internal class User
 {
     public Guid Id { get; init; } = Guid.NewGuid();
     public string Login { get; set; }

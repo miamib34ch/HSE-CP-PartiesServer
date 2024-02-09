@@ -5,7 +5,7 @@ using PartiesApi.Services.User;
 
 namespace PartiesApi.Services.Auth;
 
-public class AuthService(IUserService userService, IJwtService jwtService) : IAuthService
+internal class AuthService(IUserService userService, IJwtService jwtService) : IAuthService
 {
     public async Task<AuthResult> RegisterAsync(string login, string password)
     {

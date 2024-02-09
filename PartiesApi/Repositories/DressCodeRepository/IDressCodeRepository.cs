@@ -2,7 +2,7 @@ using PartiesApi.Models;
 
 namespace PartiesApi.Repositories.DressCodeRepository;
 
-public interface IDressCodeRepository
+internal interface IDressCodeRepository
 {
     Task<DressCode?> GetDressCodeOrDefaultAsync(Guid dressCodeId);
 }

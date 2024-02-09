@@ -1,7 +1,7 @@
 
 namespace PartiesApi.Services.JWT;
 
-public interface IJwtService
+internal interface IJwtService
 {
     string GenerateToken(string login);
 }

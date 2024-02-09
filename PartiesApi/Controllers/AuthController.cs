@@ -4,10 +4,17 @@ using PartiesApi.Services.Auth;
 
 namespace PartiesApi.Controllers;
 
+/// <summary>
+/// Получение JWT для авторизации
+/// </summary>
+/// <param name="authService"></param>
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController(IAuthService authService) : ControllerBase
 {
+    /// <summary>
+    /// Регистрация нового пользователя
+    /// </summary>
     [HttpPost("Register")]
     public async Task<IActionResult> RegisterAsync([FromBody] UserRequest user)
     {
@@ -26,6 +33,9 @@ public class AuthController(IAuthService authService) : ControllerBase
         }
     }
 
+    /// <summary>
+    /// Логин существующего пользователя
+    /// </summary>
     [HttpPost("Login")]
     public async Task<IActionResult> LoginAsync([FromBody] UserRequest user)
     {

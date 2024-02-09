@@ -1,6 +1,6 @@
 namespace PartiesApi.Models;
 
-public enum FriendRequestStatus
+internal enum FriendRequestStatus
 {
     None,
     Approved,

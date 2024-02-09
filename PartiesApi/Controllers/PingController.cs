@@ -7,7 +7,7 @@ namespace PartiesApi.Controllers;
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/[controller]")]
-public class PingController : ControllerBase
+internal class PingController : ControllerBase
 {
     [HttpGet]
     public async Task<IActionResult> RegisterAsync()

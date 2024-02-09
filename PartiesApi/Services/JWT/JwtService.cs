@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace PartiesApi.Services.JWT;
 
-public class JwtService(IOptionsMonitor<JwtConfig> jwtConfig) : IJwtService
+internal class JwtService(IOptionsMonitor<JwtConfig> jwtConfig) : IJwtService
 {
     public string GenerateToken(string login)
     {

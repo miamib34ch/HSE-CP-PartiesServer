@@ -1,6 +1,6 @@
 namespace PartiesApi.Models;
 
-public class FriendRequest
+internal class FriendRequest
 {
     public Guid FromUserId { get; set; }
     public Guid ToUserId { get; set; }

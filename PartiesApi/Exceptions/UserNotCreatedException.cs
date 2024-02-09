@@ -1,6 +1,6 @@
 namespace PartiesApi.Exceptions;
 
-public class UserNotCreatedException : Exception
+internal class UserNotCreatedException : Exception
 {
     
 }

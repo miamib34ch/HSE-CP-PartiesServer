@@ -1,6 +1,6 @@
 namespace PartiesApi.Repositories.User;
 
-public interface IUserRepository
+internal interface IUserRepository
 {
     Task<Models.User?> GetUserOrDefaultAsync(string userLogin);
     Task<bool> AddUserAsync(Models.User user);

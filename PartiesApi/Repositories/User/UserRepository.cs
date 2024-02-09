@@ -3,7 +3,7 @@ using PartiesApi.Database;
 
 namespace PartiesApi.Repositories.User;
 
-public class UserRepository(ApplicationDbContext dbContext) : IUserRepository
+internal class UserRepository(ApplicationDbContext dbContext) : IUserRepository
 {
     public async Task<Models.User?> GetUserOrDefaultAsync(string userLogin)
     {

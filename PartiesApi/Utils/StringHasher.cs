@@ -3,7 +3,7 @@ using System.Text;
 
 namespace PartiesApi.Utils;
 
-public static class StringHasher
+internal static class StringHasher
 {
     public static string GetSha256Hash(string input)
     {
