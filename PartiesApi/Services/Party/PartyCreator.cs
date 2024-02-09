@@ -17,8 +17,7 @@ internal class PartyCreator(IDressCodeService dressCodeService, IUserService use
         if (partyRequest.DressCodeId != null)
             newParty.DressCode = await GetDressCodeAsync((Guid)partyRequest.DressCodeId);
 
-        if (partyRequest.PartyMembersIds != null)
-            newParty.Organizer = await GetOrganizerAsync(partyRequest.OrganizerId);
+        newParty.Organizer = await GetOrganizerAsync(partyRequest.OrganizerId);
 
         if (partyRequest.PartyMembersIds != null)
             newParty.PartyMembers = await GetPartyUsersAsync(partyRequest.PartyMembersIds, PartyRole.Member);

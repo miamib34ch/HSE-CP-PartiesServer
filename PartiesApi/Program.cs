@@ -15,6 +15,7 @@ using PartiesApi.Services.JWT;
 using PartiesApi.Services.Party;
 using PartiesApi.Services.PartyRule;
 using PartiesApi.Services.User;
+using PartiesApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,6 +82,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddSingleton(tokenValidationParams);
+builder.Services.AddSingleton<UserIdReader>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
