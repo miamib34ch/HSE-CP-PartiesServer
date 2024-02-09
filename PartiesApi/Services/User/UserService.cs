@@ -34,4 +34,11 @@ public class UserService(IUserRepository userRepository) : IUserService
 
         return isUserCreated;
     }
+
+    public async Task<Models.User?> GetUserOrDefaultAsync(Guid userId)
+    {
+        var user = await userRepository.GetUserOrDefaultAsync(userId);
+
+        return user;
+    }
 }

@@ -23,7 +23,7 @@ public class UserRepository(ApplicationDbContext dbContext) : IUserRepository
     {
         try
         {
-            var createdUser = await dbContext.AddAsync(user);
+            var createdUser = await dbContext.Users.AddAsync(user);
 
             return createdUser.State == EntityState.Added;
         }
@@ -34,6 +34,20 @@ public class UserRepository(ApplicationDbContext dbContext) : IUserRepository
         finally
         {
             await dbContext.SaveChangesAsync();
+        }
+    }
+
+    public async Task<Models.User?> GetUserOrDefaultAsync(Guid userId)
+    {
+        try
+        {
+            var user = await dbContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
+
+            return user;
+        }
+        catch (Exception e)
+        {
+            return null;
         }
     }
 }

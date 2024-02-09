@@ -15,7 +15,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         {
             var authResult = await authService.RegisterAsync(user.Login, user.Password);
 
-            if (authResult.IsSuccess == false)
+            if (!authResult.IsSuccess)
                 return BadRequest(authResult.Error);
 
             return Ok(authResult);
