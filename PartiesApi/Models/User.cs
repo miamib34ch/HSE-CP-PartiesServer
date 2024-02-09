@@ -9,6 +9,7 @@ public class User
     public string PasswordHash { get; set; }
     public string? PhoneNumber { get; set; }
     public virtual ICollection<Party> MemberParties { get; set; }
+    public virtual ICollection<Party> EditorParties { get; set; }
     public virtual ICollection<FriendRequest> SentRequests { get; set; }
     public virtual ICollection<FriendRequest> ReceivedRequests { get; set; }
 

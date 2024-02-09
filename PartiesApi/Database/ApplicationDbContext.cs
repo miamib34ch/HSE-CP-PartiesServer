@@ -20,7 +20,13 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<Party>()
             .HasMany(e => e.PartyMembers)
-            .WithMany(e => e.MemberParties);
+            .WithMany(e => e.MemberParties)
+            .UsingEntity(join => join.ToTable("PartyMembers"));
+        
+        modelBuilder.Entity<Party>()
+            .HasMany(e => e.PartyEditors)
+            .WithMany(e => e.EditorParties)
+            .UsingEntity(join => join.ToTable("PartyEditors"));
         
         modelBuilder.Entity<User>()
             .HasMany(u => u.SentRequests)

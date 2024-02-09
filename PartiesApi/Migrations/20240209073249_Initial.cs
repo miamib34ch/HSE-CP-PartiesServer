@@ -105,6 +105,54 @@ namespace PartiesApi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "PartyEditors",
+                columns: table => new
+                {
+                    EditorPartiesId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PartyEditorsId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PartyEditors", x => new { x.EditorPartiesId, x.PartyEditorsId });
+                    table.ForeignKey(
+                        name: "FK_PartyEditors_Parties_EditorPartiesId",
+                        column: x => x.EditorPartiesId,
+                        principalTable: "Parties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PartyEditors_Users_PartyEditorsId",
+                        column: x => x.PartyEditorsId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PartyMembers",
+                columns: table => new
+                {
+                    MemberPartiesId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PartyMembersId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PartyMembers", x => new { x.MemberPartiesId, x.PartyMembersId });
+                    table.ForeignKey(
+                        name: "FK_PartyMembers_Parties_MemberPartiesId",
+                        column: x => x.MemberPartiesId,
+                        principalTable: "Parties",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PartyMembers_Users_PartyMembersId",
+                        column: x => x.PartyMembersId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PartyPartyRule",
                 columns: table => new
                 {
@@ -128,30 +176,6 @@ namespace PartiesApi.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "PartyUser",
-                columns: table => new
-                {
-                    MemberPartiesId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PartyMembersId = table.Column<Guid>(type: "uuid", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_PartyUser", x => new { x.MemberPartiesId, x.PartyMembersId });
-                    table.ForeignKey(
-                        name: "FK_PartyUser_Parties_MemberPartiesId",
-                        column: x => x.MemberPartiesId,
-                        principalTable: "Parties",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_PartyUser_Users_PartyMembersId",
-                        column: x => x.PartyMembersId,
-                        principalTable: "Users",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_FriendRequests_ToUserId",
                 table: "FriendRequests",
@@ -168,14 +192,19 @@ namespace PartiesApi.Migrations
                 column: "OrganizerId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_PartyEditors_PartyEditorsId",
+                table: "PartyEditors",
+                column: "PartyEditorsId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PartyMembers_PartyMembersId",
+                table: "PartyMembers",
+                column: "PartyMembersId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PartyPartyRule_PartyRulesId",
                 table: "PartyPartyRule",
                 column: "PartyRulesId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PartyUser_PartyMembersId",
-                table: "PartyUser",
-                column: "PartyMembersId");
         }
 
         /// <inheritdoc />
@@ -185,16 +214,19 @@ namespace PartiesApi.Migrations
                 name: "FriendRequests");
 
             migrationBuilder.DropTable(
+                name: "PartyEditors");
+
+            migrationBuilder.DropTable(
+                name: "PartyMembers");
+
+            migrationBuilder.DropTable(
                 name: "PartyPartyRule");
 
             migrationBuilder.DropTable(
-                name: "PartyUser");
+                name: "Parties");
 
             migrationBuilder.DropTable(
                 name: "PartyRules");
-
-            migrationBuilder.DropTable(
-                name: "Parties");
 
             migrationBuilder.DropTable(
                 name: "DressCodes");

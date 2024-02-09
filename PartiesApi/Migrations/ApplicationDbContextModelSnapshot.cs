@@ -160,7 +160,22 @@ namespace PartiesApi.Migrations
 
                     b.HasIndex("PartyMembersId");
 
-                    b.ToTable("PartyUser");
+                    b.ToTable("PartyMembers", (string)null);
+                });
+
+            modelBuilder.Entity("PartyUser1", b =>
+                {
+                    b.Property<Guid>("EditorPartiesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PartyEditorsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("EditorPartiesId", "PartyEditorsId");
+
+                    b.HasIndex("PartyEditorsId");
+
+                    b.ToTable("PartyEditors", (string)null);
                 });
 
             modelBuilder.Entity("PartiesApi.Models.FriendRequest", b =>
@@ -223,6 +238,21 @@ namespace PartiesApi.Migrations
                     b.HasOne("PartiesApi.Models.User", null)
                         .WithMany()
                         .HasForeignKey("PartyMembersId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("PartyUser1", b =>
+                {
+                    b.HasOne("PartiesApi.Models.Party", null)
+                        .WithMany()
+                        .HasForeignKey("EditorPartiesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PartiesApi.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("PartyEditorsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
