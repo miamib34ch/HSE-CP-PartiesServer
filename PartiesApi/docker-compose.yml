@@ -1,0 +1,23 @@
+﻿services:
+  parties-api:
+    image: parties-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - "parties-db"
+    environment:
+      - ConnectionStrings__DefaultConnection=Server=parties-db;Port=5432;Database=parties;Username=postgres;Password=postgres;
+    ports:
+      - "8080:8080"
+  
+  parties-db:
+    image: postgres:latest
+    container_name: parties-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=tickets
+    ports:
+      - "5435:5432"
+    restart: always

@@ -12,7 +12,7 @@ using PartiesApi.Database;
 namespace PartiesApi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240209073249_Initial")]
+    [Migration("20240210190555_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -84,7 +84,7 @@ namespace PartiesApi.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("OrganizerId")
+                    b.Property<Guid>("OrganizerId")
                         .HasColumnType("uuid");
 
                     b.Property<DateTime>("StartTime")
@@ -208,7 +208,9 @@ namespace PartiesApi.Migrations
 
                     b.HasOne("PartiesApi.Models.User", "Organizer")
                         .WithMany()
-                        .HasForeignKey("OrganizerId");
+                        .HasForeignKey("OrganizerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("DressCode");
 

@@ -85,7 +85,7 @@ namespace PartiesApi.Migrations
                     DressCodeId = table.Column<Guid>(type: "uuid", nullable: true),
                     StartTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     FinishTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    OrganizerId = table.Column<Guid>(type: "uuid", nullable: true),
+                    OrganizerId = table.Column<Guid>(type: "uuid", nullable: false),
                     LocationLatitude = table.Column<double>(type: "double precision", nullable: false),
                     LocationLongitude = table.Column<double>(type: "double precision", nullable: false)
                 },
@@ -101,7 +101,8 @@ namespace PartiesApi.Migrations
                         name: "FK_Parties_Users_OrganizerId",
                         column: x => x.OrganizerId,
                         principalTable: "Users",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
