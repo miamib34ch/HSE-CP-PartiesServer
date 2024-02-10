@@ -103,6 +103,27 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
+    
+    /// <summary>
+    /// Получить все вечеринки другого пользователя
+    /// </summary>
+    [HttpGet("FriendParties")]
+    public async Task<IActionResult> GetFriendPartiesAsync([FromQuery] Guid friendUserId)
+    {
+        try
+        {
+            var result = await partyService.GetUserOrganizedPartiesAsync(friendUserId);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
 
     /// <summary>
     /// Покинуть вечеринку. Организатор не может покинуть свою вечеринку.
