@@ -1,31 +1,74 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PartiesApi.DTO.Party;
-using PartiesApi.Services.Party;
+using PartiesApi.Models;
+using PartiesApi.Services.Friend;
 using PartiesApi.Utils;
 
 namespace PartiesApi.Controllers;
 
 /// <summary>
-/// Управление вечеринками
+/// Управление друзьями
 /// </summary>
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/[controller]")]
-public class PartyController(IPartyService partyService, UserIdReader userIdReader) : ControllerBase
+public class FriendController(IFriendService friendService, UserIdReader userIdReader) : ControllerBase
 {
     /// <summary>
-    /// Создание новой вечеринки
+    /// Отправление заявки в друзья другому пользователю
     /// </summary>
-    [HttpPost("Create")]
-    public async Task<IActionResult> CreatePartyAsync([FromBody] PartyRequest partyRequest)
+    [HttpPut("SendFriendRequest")]
+    public async Task<IActionResult> SendFriendRequestAsync([FromQuery] Guid friendRequestId)
     {
         try
         {
             var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            partyRequest.OrganizerId = userId;
-            var result = await partyService.CreatePartyAsync(partyRequest);
+            var result = await friendService.SendFriendRequestAsync(userId, friendRequestId);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
+    /// Получение отправленных заявок, на которые еще не ответили или отклонили
+    /// </summary>
+    [HttpGet("SentFriendRequests")]
+    public async Task<IActionResult> GetSentFriendRequestsAsync()
+    {
+        try
+        {
+            var userId = userIdReader.GetUserIdFromAuth(HttpContext);
+            var result = await friendService.GetSentFriendRequestsAsync(userId);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+
+    /// <summary>
+    /// Получение полученных заявок, на которые еще не ответили
+    /// </summary>
+    [HttpGet("ReceivedFriendRequests")]
+    public async Task<IActionResult> GetReceivedFriendRequestsAsync()
+    {
+        try
+        {
+            var userId = userIdReader.GetUserIdFromAuth(HttpContext);
+            var result = await friendService.GetReceivedFriendRequestsAsync(userId);
 
             if (!result.IsSuccess)
                 return BadRequest(result);
@@ -39,15 +82,15 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
     }
     
     /// <summary>
-    /// Редактирование существующей вечеринки
+    /// Получение всех друзей
     /// </summary>
-    [HttpPatch("Edit")]
-    public async Task<IActionResult> EditPartyAsync([FromBody] PartyRequest partyRequest)
+    [HttpGet("GetFriends")]
+    public async Task<IActionResult> GetFriendsAsync()
     {
         try
         {
             var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await partyService.EditPartyAsync(partyRequest, userId);
+            var result = await friendService.GetFriendsAsync(userId);
 
             if (!result.IsSuccess)
                 return BadRequest(result);
@@ -59,17 +102,17 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-
+    
     /// <summary>
-    /// Получить все вечеринки, на которых пользователь является организатором
+    /// Принятие заявки в друзья
     /// </summary>
-    [HttpGet("MyParties")]
-    public async Task<IActionResult> GetMyPartiesAsync()
+    [HttpPatch("AcceptRequest")]
+    public async Task<IActionResult> AcceptFriendRequestsAsync([FromQuery] Guid fromUserId)
     {
         try
         {
             var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await partyService.GetUserOrganizedPartiesAsync(userId);
+            var result = await friendService.ChangeFriendRequestStatusAsync(userId, fromUserId, FriendRequestStatus.Approved);
 
             if (!result.IsSuccess)
                 return BadRequest(result);
@@ -81,61 +124,17 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
     }
-
+    
     /// <summary>
-    /// Получить все вечеринки, на которых пользователь является участником
+    /// Отклонение заявки в друзья
     /// </summary>
-    [HttpGet("MemberParties")]
-    public async Task<IActionResult> GetMemberPartiesAsync()
+    [HttpPatch("RejectRequest")]
+    public async Task<IActionResult> RejectFriendRequestsAsync([FromQuery] Guid fromUserId)
     {
         try
         {
             var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await partyService.GetUserMemberPartiesAsync(userId);
-
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    /// <summary>
-    /// Покинуть вечеринку. Организатор не может покинуть свою вечеринку.
-    /// </summary>
-    [HttpPatch("Quit")]
-    public async Task<IActionResult> QuitFromPartyAsync([FromQuery] Guid partyId)
-    {
-        try
-        {
-            var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await partyService.DeleteUserFromPartyAsync(partyId, userId);
-
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    /// <summary>
-    /// Присоединиться к вечеринке
-    /// </summary>
-    [HttpPatch("Enter")]
-    public async Task<IActionResult> EnterPartyAsync([FromQuery] Guid partyId)
-    {
-        try
-        {
-            var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await partyService.AddUserToPartyAsync(partyId, userId);
+            var result = await friendService.ChangeFriendRequestStatusAsync(userId, fromUserId, FriendRequestStatus.Rejected);
 
             if (!result.IsSuccess)
                 return BadRequest(result);

@@ -1,5 +1,6 @@
 using AutoMapper;
 using PartiesApi.DTO.DressCode;
+using PartiesApi.DTO.FriendRequest;
 using PartiesApi.DTO.Party;
 using PartiesApi.DTO.PartyRule;
 using PartiesApi.DTO.User;
@@ -17,5 +18,7 @@ internal class AutoMappingProfile : Profile
         CreateMap<PartyRule, PartyRuleResponse>();
         CreateMap<PartyRuleRequest, PartyRule>();
         CreateMap<Party, PartyResponse>();
+        CreateMap<FriendRequest, SentFriendRequestResponse>();
+        CreateMap<FriendRequest, ReceivedFriendRequestResponse>();
     }
 }

@@ -12,10 +12,10 @@ public record PartyResponse
     public DressCodeResponse? DressCode { get; init; }
     public DateTime StartTime { get; init; }
     public DateTime FinishTime { get; init; }
-    public virtual UserResponse? Organizer { get; init; }
-    public virtual IList<UserResponse>? PartyMembers { get; init; }
-    public virtual IList<UserResponse>? PartyEditors { get; init; }
+    public UserResponse? Organizer { get; init; }
+    public IList<UserResponse>? PartyMembers { get; init; }
+    public IList<UserResponse>? PartyEditors { get; init; }
     public double LocationLatitude { get; init; }
     public double LocationLongitude { get; init; }
-    public virtual IList<PartyRuleResponse>? PartyRules { get; init; }
+    public IList<PartyRuleResponse>? PartyRules { get; init; }
 }

@@ -35,7 +35,7 @@ internal class PartyService(IPartyRepository partyRepository, IDressCodeReposito
         }
     }
 
-    public async Task<MethodResult> EditPartyAsync(PartyRequest partyRequest)
+    public async Task<MethodResult> EditPartyAsync(PartyRequest partyRequest, Guid userId)
     {
         const string methodName = "EditParty";
 
@@ -48,7 +48,9 @@ internal class PartyService(IPartyRepository partyRepository, IDressCodeReposito
             if (existingParty == null)
                 return new MethodResult(methodName, false, $"Party with Id {partyRequest.Id} does not exist");
 
-            if (existingParty.Organizer.Id != partyRequest.OrganizerId)
+            var canUserEditParty = existingParty.Organizer.Id != userId
+                                   || existingParty.PartyEditors.Select(editor => editor.Id).Contains(userId);
+            if (!canUserEditParty)
                 return new MethodResult(methodName, false, $"This party is not yours. You can't edit it!");
 
             var editedParty = await _partyCreator.CreatePartyAsync(partyRequest);

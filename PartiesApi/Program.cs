@@ -6,11 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using PartiesApi.Database;
 using PartiesApi.Repositories.DressCode;
+using PartiesApi.Repositories.Friend;
 using PartiesApi.Repositories.Party;
 using PartiesApi.Repositories.PartyRule;
 using PartiesApi.Repositories.User;
 using PartiesApi.Services.Auth;
 using PartiesApi.Services.DressCode;
+using PartiesApi.Services.Friend;
 using PartiesApi.Services.JWT;
 using PartiesApi.Services.Party;
 using PartiesApi.Services.PartyRule;
@@ -94,11 +96,13 @@ builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IPartyService, PartyService>();
 builder.Services.AddScoped<IPartyRuleService, PartyRuleService>();
 builder.Services.AddScoped<IDressCodeService, DressCodeService>();
+builder.Services.AddScoped<IFriendService, FriendService>();
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPartyRepository, PartyRepository>();
 builder.Services.AddScoped<IPartyRuleRepository, PartyRuleRepository>();
 builder.Services.AddScoped<IDressCodeRepository, DressCodeRepository>();
+builder.Services.AddScoped<IFriendRepository, FriendRepository>();
 
 var app = builder.Build();
 
