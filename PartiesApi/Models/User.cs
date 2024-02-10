@@ -8,13 +8,13 @@ internal class User
     public string Login { get; set; }
     public string PasswordHash { get; set; }
     public string? PhoneNumber { get; set; }
-    public virtual ICollection<Party> MemberParties { get; set; }
-    public virtual ICollection<Party> EditorParties { get; set; }
-    public virtual ICollection<FriendRequest> SentRequests { get; set; }
-    public virtual ICollection<FriendRequest> ReceivedRequests { get; set; }
+    public virtual IList<Party> MemberParties { get; set; }
+    public virtual IList<Party> EditorParties { get; set; }
+    public virtual IList<FriendRequest> SentRequests { get; set; }
+    public virtual IList<FriendRequest> ReceivedRequests { get; set; }
 
     [NotMapped]
-    public virtual ICollection<User> Friends
+    public virtual IList<User> Friends
     {
         get
         {

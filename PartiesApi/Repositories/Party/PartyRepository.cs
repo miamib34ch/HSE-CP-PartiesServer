@@ -56,7 +56,7 @@ internal class PartyRepository(ApplicationDbContext dbContext) : IPartyRepositor
                 .Include(party => party.PartyMembers)
                 .Include(party => party.PartyRules)
                 .ToListAsync();
-    
+
             return parties;
         }
         catch (Exception e)
@@ -69,15 +69,15 @@ internal class PartyRepository(ApplicationDbContext dbContext) : IPartyRepositor
     {
         try
         {
-            var parties = await dbContext.Parties
+            var party = await dbContext.Parties
                 .Include(party => party.Organizer)
                 .Include(party => party.DressCode)
                 .Include(party => party.PartyEditors)
                 .Include(party => party.PartyMembers)
                 .Include(party => party.PartyRules)
                 .FirstOrDefaultAsync(party => party.Id == partyId);
-    
-            return parties;
+
+            return party;
         }
         catch (Exception e)
         {
@@ -85,13 +85,36 @@ internal class PartyRepository(ApplicationDbContext dbContext) : IPartyRepositor
         }
     }
 
-    public async Task<bool> UpdatePartyAsync(Models.Party party)
+    public async Task<bool> UpdatePartyAsync(Models.Party newParty)
     {
         try
         {
-            var createdParty = dbContext.Parties.Update(party);
+            var existingParty = await dbContext.Parties
+                .Include(party => party.Organizer)
+                .Include(party => party.DressCode)
+                .Include(party => party.PartyEditors)
+                .Include(party => party.PartyMembers)
+                .Include(party => party.PartyRules)
+                .FirstOrDefaultAsync(party => party.Id == newParty.Id);
 
-            return createdParty.State == EntityState.Modified;
+            if (existingParty != null)
+            {
+                existingParty.Name = newParty.Name;
+                existingParty.PartyEditors = newParty.PartyEditors;
+                existingParty.PartyMembers = newParty.PartyMembers;
+                existingParty.PartyRules = newParty.PartyRules;
+                existingParty.LocationLatitude = newParty.LocationLatitude;
+                existingParty.LocationLongitude = newParty.LocationLongitude;
+                existingParty.DressCode = newParty.DressCode;
+                existingParty.Organizer = newParty.Organizer;
+                existingParty.Description = newParty.Description;
+                existingParty.StartTime = newParty.StartTime;
+                existingParty.FinishTime = newParty.FinishTime;
+
+                var updatedParty = dbContext.Parties.Update(existingParty);
+
+                return updatedParty.State == EntityState.Modified;
+            }
         }
         catch (Exception e)
         {
@@ -101,5 +124,7 @@ internal class PartyRepository(ApplicationDbContext dbContext) : IPartyRepositor
         {
             await dbContext.SaveChangesAsync();
         }
+
+        return false;
     }
 }

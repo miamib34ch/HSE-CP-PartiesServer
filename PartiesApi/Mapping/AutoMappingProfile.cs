@@ -12,8 +12,10 @@ internal class AutoMappingProfile : Profile
     public AutoMappingProfile()
     {
         CreateMap<DressCode, DressCodeResponse>();
+        CreateMap<DressCodeRequest, DressCode>();
         CreateMap<User, UserResponse>();
         CreateMap<PartyRule, PartyRuleResponse>();
+        CreateMap<PartyRuleRequest, PartyRule>();
         CreateMap<Party, PartyResponse>();
     }
 }

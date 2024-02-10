@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using PartiesApi.DTO.Party;
-using PartiesApi.Services.JWT;
 using PartiesApi.Services.Party;
 using PartiesApi.Utils;
 
@@ -15,7 +13,7 @@ namespace PartiesApi.Controllers;
 [ApiController]
 [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 [Route("api/[controller]")]
-public class PartyController(IPartyService partyService, IOptionsMonitor<JwtConfig> jwtConfig, UserIdReader userIdReader) : ControllerBase
+public class PartyController(IPartyService partyService, UserIdReader userIdReader) : ControllerBase
 {
     /// <summary>
     /// Создание новой вечеринки
@@ -28,6 +26,29 @@ public class PartyController(IPartyService partyService, IOptionsMonitor<JwtConf
             var userId = userIdReader.GetUserIdFromAuth(HttpContext);
             partyRequest.OrganizerId = userId;
             var result = await partyService.CreatePartyAsync(partyRequest);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+    
+    /// <summary>
+    /// Редактирование существующей вечеринки
+    /// </summary>
+    [HttpPatch("Edit")]
+    public async Task<IActionResult> EditPartyAsync([FromBody] PartyRequest partyRequest)
+    {
+        try
+        {
+            var userId = userIdReader.GetUserIdFromAuth(HttpContext);
+            partyRequest.OrganizerId = userId;
+            var result = await partyService.EditPartyAsync(partyRequest);
 
             if (!result.IsSuccess)
                 return BadRequest(result);

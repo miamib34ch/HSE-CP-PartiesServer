@@ -1,9 +1,11 @@
+using AutoMapper;
+using PartiesApi.DTO.User;
 using PartiesApi.Repositories.User;
 using PartiesApi.Utils;
 
 namespace PartiesApi.Services.User;
 
-internal class UserService(IUserRepository userRepository) : IUserService
+internal class UserService(IUserRepository userRepository, IMapper mapper) : IUserService
 {
     public async Task<bool> CheckUserExistenceAsync(string userLogin)
     {
@@ -20,7 +22,7 @@ internal class UserService(IUserRepository userRepository) : IUserService
         return user != null && passwordHash == user.PasswordHash;
     }
 
-    public async Task<Models.User?> CreateUserAsync(string login, string password)
+    public async Task<UserResponse?> CreateUserAsync(string login, string password)
     {
         var passwordHash = StringHasher.GetSha256Hash(password);
 
@@ -32,20 +34,35 @@ internal class UserService(IUserRepository userRepository) : IUserService
 
         var createdUser = await userRepository.AddUserAsync(user);
 
-        return createdUser;
+        if (createdUser == null)
+            return null;
+            
+        var userResponse = mapper.Map<Models.User, UserResponse>(createdUser);
+
+        return userResponse;
     }
 
-    public async Task<Models.User?> GetUserOrDefaultAsync(Guid userId)
+    public async Task<UserResponse?> GetUserOrDefaultAsync(Guid userId)
     {
         var user = await userRepository.GetUserOrDefaultAsync(userId);
 
-        return user;
+        if (user == null)
+            return null;
+            
+        var userResponse = mapper.Map<Models.User, UserResponse>(user);
+
+        return userResponse;
     }
 
-    public async Task<Models.User?> GetUserOrDefaultAsync(string userLogin)
+    public async Task<UserResponse?> GetUserOrDefaultAsync(string userLogin)
     {
         var user = await userRepository.GetUserOrDefaultAsync(userLogin);
 
-        return user;
+        if (user == null)
+            return null;
+            
+        var userResponse = mapper.Map<Models.User, UserResponse>(user);
+
+        return userResponse;
     }
 }

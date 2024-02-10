@@ -1,6 +1,11 @@
+using PartiesApi.DTO;
+using PartiesApi.DTO.DressCode;
+
 namespace PartiesApi.Services.DressCode;
 
-internal interface IDressCodeService
+public interface IDressCodeService
 {
-    Task<Models.DressCode?> GetDressCodeOrDefaultAsync(Guid dressCodeId);
+    Task<MethodResult<IEnumerable<DressCodeResponse>>> GetDressCodesAsync();
+    Task<MethodResult> CreateDressCodeAsync(DressCodeRequest dressCodeRequest);
+    Task<MethodResult> EditDressCodeAsync(DressCodeRequest dressCodeRequest);
 }

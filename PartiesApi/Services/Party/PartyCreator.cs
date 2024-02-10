@@ -1,23 +1,27 @@
 using PartiesApi.DTO.Party;
 using PartiesApi.Exceptions;
-using PartiesApi.Services.DressCode;
-using PartiesApi.Services.PartyRule;
-using PartiesApi.Services.User;
+using PartiesApi.Repositories.DressCode;
+using PartiesApi.Repositories.PartyRule;
+using PartiesApi.Repositories.User;
 using PartiesApi.Utils;
 
 namespace PartiesApi.Services.Party;
 
-internal class PartyCreator(IDressCodeService dressCodeService, IUserService userService,
-    IPartyRuleService partyRuleService)
+internal class PartyCreator(IDressCodeRepository dressCodeRepository, IUserRepository userRepository,
+    IPartyRuleRepository partyRuleRepository)
 {
     public async Task<Models.Party> CreatePartyAsync(PartyRequest partyRequest)
     {
         var newParty = new Models.Party();
+        
+        if (partyRequest.Id != null)
+            newParty.Id = (Guid)partyRequest.Id;
 
         if (partyRequest.DressCodeId != null)
             newParty.DressCode = await GetDressCodeAsync((Guid)partyRequest.DressCodeId);
 
-        newParty.Organizer = await GetOrganizerAsync(partyRequest.OrganizerId);
+        if (partyRequest.OrganizerId != null)
+            newParty.Organizer = await GetOrganizerAsync((Guid)partyRequest.OrganizerId);
 
         if (partyRequest.PartyMembersIds != null)
             newParty.PartyMembers = await GetPartyUsersAsync(partyRequest.PartyMembersIds, PartyRole.Member);
@@ -44,7 +48,7 @@ internal class PartyCreator(IDressCodeService dressCodeService, IUserService use
 
     private async Task<Models.DressCode> GetDressCodeAsync(Guid dressCodeId)
     {
-        var dressCode = await dressCodeService.GetDressCodeOrDefaultAsync(dressCodeId);
+        var dressCode = await dressCodeRepository.GetDressCodeOrDefaultAsync(dressCodeId);
 
         if (dressCode == null)
             throw new ElementNotFoundException("Dress Code", dressCodeId);
@@ -54,7 +58,7 @@ internal class PartyCreator(IDressCodeService dressCodeService, IUserService use
 
     private async Task<Models.User> GetOrganizerAsync(Guid organizerId)
     {
-        var organizer = await userService.GetUserOrDefaultAsync(organizerId);
+        var organizer = await userRepository.GetUserOrDefaultAsync(organizerId);
 
         if (organizer == null)
             throw new ElementNotFoundException($"{EnumDescriptionReader.GetEnumDescription(PartyRole.Organizer)}",
@@ -69,7 +73,7 @@ internal class PartyCreator(IDressCodeService dressCodeService, IUserService use
 
         foreach (var partyMemberId in partyMemberIds)
         {
-            var partyMember = await userService.GetUserOrDefaultAsync(partyMemberId);
+            var partyMember = await userRepository.GetUserOrDefaultAsync(partyMemberId);
 
             if (partyMember == null)
                 throw new ElementNotFoundException($"Party {EnumDescriptionReader.GetEnumDescription(partyRole)}",
@@ -87,7 +91,7 @@ internal class PartyCreator(IDressCodeService dressCodeService, IUserService use
 
         foreach (var partyRuleId in partyRuleIds)
         {
-            var partyRule = await partyRuleService.GetPartyRuleOrDefaultAsync(partyRuleId);
+            var partyRule = await partyRuleRepository.GetPartyRuleOrDefaultAsync(partyRuleId);
 
             if (partyRule == null)
                 throw new ElementNotFoundException($"Party Party Rule", partyRuleId);
