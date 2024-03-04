@@ -26,19 +26,27 @@ internal class PartyRuleService(IPartyRuleRepository partyRuleRepository, IMappe
         }
     }
 
-    public async Task<MethodResult> CreatePartyRuleAsync(PartyRuleRequest partyRuleRequest)
+    public async Task<MethodResult<PartyRuleResponse>> CreatePartyRuleAsync(PartyRuleRequest partyRuleRequest)
     {
         const string methodName = "CreatePartyRule";
 
         try
         {
+            
             var partyRule = mapper.Map<PartyRuleRequest, Models.PartyRule>(partyRuleRequest);
-            var isPartyRuleCreated = await partyRuleRepository.AddPartyRuleAsync(partyRule);
-            return new MethodResult(methodName, isPartyRuleCreated, string.Empty);
+
+            var createdPartyRule = await partyRuleRepository.AddPartyRuleAsync(partyRule);
+            var isPartyRuleCreated = createdPartyRule != null;
+            
+            if (!isPartyRuleCreated)
+                return new MethodResult<PartyRuleResponse>(methodName, isPartyRuleCreated, string.Empty);
+
+            var partyRuleResponse = mapper.Map<Models.PartyRule, PartyRuleResponse>(createdPartyRule);
+            return new MethodResult<PartyRuleResponse>(methodName, isPartyRuleCreated, string.Empty, partyRuleResponse);
         }
         catch (Exception ex)
         {
-            return new MethodResult(methodName, false, $"Unknown error");
+            return new MethodResult<PartyRuleResponse>(methodName, false, $"Unknown error");
         }
     }
 

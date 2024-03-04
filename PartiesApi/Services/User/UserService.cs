@@ -1,5 +1,8 @@
 using AutoMapper;
+using PartiesApi.DTO;
+using PartiesApi.DTO.FriendRequest;
 using PartiesApi.DTO.User;
+using PartiesApi.Models;
 using PartiesApi.Repositories.User;
 using PartiesApi.Utils;
 
@@ -64,5 +67,25 @@ internal class UserService(IUserRepository userRepository, IMapper mapper) : IUs
         var userResponse = mapper.Map<Models.User, UserResponse>(user);
 
         return userResponse;
+    }
+
+    public async Task<MethodResult<IEnumerable<UserResponse>>> FindUsersAsync(string userLogin)
+    {
+        const string methodName = "FindUsers";
+
+        try
+        {
+            var users = await userRepository.FindUsersAsync(userLogin);
+
+            var userRequests =
+                users.Select(mapper.Map<Models.User, UserResponse>).ToList();
+            
+            return new MethodResult<IEnumerable<UserResponse>>(methodName, true,
+                string.Empty, userRequests);
+        }
+        catch (Exception ex)
+        {
+            return new MethodResult<IEnumerable<UserResponse>>(methodName, false, $"Unknown error");
+        }
     }
 }

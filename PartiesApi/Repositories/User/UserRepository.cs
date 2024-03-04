@@ -50,4 +50,18 @@ internal class UserRepository(ApplicationDbContext dbContext) : IUserRepository
             return null;
         }
     }
+
+    public async Task<IEnumerable<Models.User>> FindUsersAsync(string userLogin)
+    {
+        try
+        {
+            var user = await dbContext.Users.Where(user => user.Login.Contains(userLogin)).ToListAsync();
+
+            return user;
+        }
+        catch (Exception e)
+        {
+            return Enumerable.Empty<Models.User>();
+        }
+    }
 }

@@ -5,7 +5,7 @@ namespace PartiesApi.Services.Party;
 
 public interface IPartyService
 {
-    Task<MethodResult> CreatePartyAsync(PartyRequest partyRequest);
+    Task<MethodResult<PartyResponse>> CreatePartyAsync(PartyRequest partyRequest);
     Task<MethodResult> EditPartyAsync(PartyRequest partyRequest, Guid userId);
     Task<MethodResult<IEnumerable<PartyResponse>>> GetUserOrganizedPartiesAsync(Guid userId);
     Task<MethodResult<IEnumerable<PartyResponse>>> GetUserMemberPartiesAsync(Guid userId);

@@ -19,17 +19,17 @@ internal class DressCodeRepository(ApplicationDbContext dbContext) : IDressCodeR
         }
     }
 
-    public async Task<bool> AddDressCodeAsync(Models.DressCode dressCode)
+    public async Task<Models.DressCode?> AddDressCodeAsync(Models.DressCode dressCode)
     {
         try
         {
             var createdDressCode = await dbContext.DressCodes.AddAsync(dressCode);
 
-            return createdDressCode.State == EntityState.Added;
+            return createdDressCode.Entity;
         }
         catch (Exception e)
         {
-            return false;
+            return null;
         }
         finally
         {

@@ -19,17 +19,17 @@ internal class PartyRuleRepository(ApplicationDbContext dbContext) : IPartyRuleR
         }
     }
 
-    public async Task<bool> AddPartyRuleAsync(Models.PartyRule partyRule)
+    public async Task<Models.PartyRule?> AddPartyRuleAsync(Models.PartyRule partyRule)
     {
         try
         {
             var createdPartyRule = await dbContext.PartyRules.AddAsync(partyRule);
 
-            return createdPartyRule.State == EntityState.Added;
+            return createdPartyRule.Entity;
         }
         catch (Exception e)
         {
-            return false;
+            return null;
         }
         finally
         {

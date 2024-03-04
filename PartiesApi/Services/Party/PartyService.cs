@@ -14,24 +14,30 @@ internal class PartyService(IPartyRepository partyRepository, IDressCodeReposito
 {
     private readonly PartyCreator _partyCreator = new(dressCodeRepository, userRepository, partyRuleRepository);
 
-    public async Task<MethodResult> CreatePartyAsync(PartyRequest partyRequest)
+    public async Task<MethodResult<PartyResponse>> CreatePartyAsync(PartyRequest partyRequest)
     {
         const string methodName = "CreateParty";
 
         try
         {
             var newParty = await _partyCreator.CreatePartyAsync(partyRequest);
-            var isPartyCreated = await partyRepository.AddPartyAsync(newParty);
-            return new MethodResult(methodName, isPartyCreated, string.Empty);
+            var createdParty = await partyRepository.AddPartyAsync(newParty);
+            var isPartyCreated = createdParty != null;
+            
+            if (!isPartyCreated)
+                return new MethodResult<PartyResponse>(methodName, isPartyCreated, string.Empty);
+
+            var partyResponse = mapper.Map<Models.Party, PartyResponse>(createdParty);
+            return new MethodResult<PartyResponse>(methodName, isPartyCreated, string.Empty, partyResponse);
         }
         catch (ElementNotFoundException ex)
         {
-            return new MethodResult(methodName, false,
+            return new MethodResult<PartyResponse>(methodName, false,
                 $"{ex.ElementName} with ID - {ex.ElementId} is not found");
         }
         catch (Exception ex)
         {
-            return new MethodResult(methodName, false, $"Unknown error");
+            return new MethodResult<PartyResponse>(methodName, false, $"Unknown error");
         }
     }
 

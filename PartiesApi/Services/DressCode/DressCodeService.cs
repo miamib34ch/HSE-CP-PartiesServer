@@ -26,19 +26,25 @@ internal class DressCodeService(IDressCodeRepository dressCodeRepository, IMappe
         }
     }
 
-    public async Task<MethodResult> CreateDressCodeAsync(DressCodeRequest dressCodeRequest)
+    public async Task<MethodResult<DressCodeResponse>> CreateDressCodeAsync(DressCodeRequest dressCodeRequest)
     {
         const string methodName = "CreateDressCode";
 
         try
         {
             var dressCode = mapper.Map<DressCodeRequest, Models.DressCode>(dressCodeRequest);
-            var isDressCodeCreated = await dressCodeRepository.AddDressCodeAsync(dressCode);
-            return new MethodResult(methodName, isDressCodeCreated, string.Empty);
+            
+            var createdDressCode = await dressCodeRepository.AddDressCodeAsync(dressCode);
+            var isDressCodeCreated = createdDressCode != null;
+            if (!isDressCodeCreated)
+                return new MethodResult<DressCodeResponse>(methodName, isDressCodeCreated, string.Empty);
+
+            var dressCodeResponse = mapper.Map<Models.DressCode, DressCodeResponse>(createdDressCode);
+            return new MethodResult<DressCodeResponse>(methodName, isDressCodeCreated, string.Empty, dressCodeResponse);
         }
         catch (Exception ex)
         {
-            return new MethodResult(methodName, false, $"Unknown error");
+            return new MethodResult<DressCodeResponse>(methodName, false, $"Unknown error");
         }
     }
 

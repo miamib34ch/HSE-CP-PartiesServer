@@ -5,17 +5,17 @@ namespace PartiesApi.Repositories.Party;
 
 internal class PartyRepository(ApplicationDbContext dbContext) : IPartyRepository
 {
-    public async Task<bool> AddPartyAsync(Models.Party newParty)
+    public async Task<Models.Party?> AddPartyAsync(Models.Party newParty)
     {
         try
         {
             var createdParty = await dbContext.Parties.AddAsync(newParty);
 
-            return createdParty.State == EntityState.Added;
+            return createdParty.Entity;
         }
         catch (Exception e)
         {
-            return false;
+            return null;
         }
         finally
         {
