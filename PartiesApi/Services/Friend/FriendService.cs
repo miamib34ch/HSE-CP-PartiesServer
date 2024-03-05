@@ -85,7 +85,7 @@ internal class FriendService(IFriendRepository friendRepository, IMapper mapper)
         {
             var existingRequest = await friendRepository.GetFriendRequestOrDefaultAsync(fromUserId, userId);
             if (existingRequest == null)
-                return new MethodResult(methodName, true, $"You don't have request from user with Id {fromUserId}");
+                return new MethodResult(methodName, false, $"You don't have request from user with Id {fromUserId}");
             
             var requestAccepted = await friendRepository.ChangeFriendRequestStatusAsync(userId, fromUserId, friendRequestStatus);
             
