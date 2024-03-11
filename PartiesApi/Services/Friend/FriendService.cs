@@ -149,8 +149,27 @@ internal class FriendService
         }
     }
 
-    public Task<MethodResult> RejectFriendRequestsAsync(Guid userId, Guid fromUserId)
+    public async Task<MethodResult> RejectFriendRequestAsync(Guid userId, Guid fromUserId)
     {
-        throw new NotImplementedException();
+        const string methodName = "RejectFriendRequests";
+
+        try
+        {
+            var friendRequests = await friendRepository.GetReceivedFriendRequestsAsync(userId);
+
+            var friendRequest = friendRequests.FirstOrDefault(request =>
+                request.ToUserId == userId && request.FromUserId == fromUserId);
+            if (friendRequest == null)
+                return new MethodResult(methodName, false, "You do not have request from this user"); ;
+
+            var isFriendRequestRemoved = friendRepository.RemoveFriendRequest(friendRequest);
+
+            return new MethodResult<IEnumerable<UserResponse>>(methodName, isFriendRequestRemoved,
+                string.Empty);
+        }
+        catch (Exception ex)
+        {
+            return new MethodResult<IEnumerable<UserResponse>>(methodName, false, $"Unknown error");
+        }
     }
 }

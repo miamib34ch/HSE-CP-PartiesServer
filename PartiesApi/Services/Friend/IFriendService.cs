@@ -12,5 +12,5 @@ public interface IFriendService
     Task<MethodResult<IEnumerable<UserResponse>>> GetFriendsAsync(Guid userId);
     Task<MethodResult> DeleteUserFromFriendsAsync(Guid userId, Guid friendId);
     Task<MethodResult> AcceptFriendRequestAsync(Guid userId, Guid fromUserId);
-    Task<MethodResult> RejectFriendRequestsAsync(Guid userId, Guid fromUserId);
+    Task<MethodResult> RejectFriendRequestAsync(Guid userId, Guid fromUserId);
 }

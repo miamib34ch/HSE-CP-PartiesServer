@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PartiesApi.Services.Friend;
+using Microsoft.IdentityModel.Tokens;
 using PartiesApi.Services.User;
 using PartiesApi.Utils;
 
@@ -30,6 +30,10 @@ public class UserController(IUserService userService, UserIdReader userIdReader)
                 return BadRequest(result);
 
             return Ok(result);
+        }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
         }
         catch (Exception e)
         {

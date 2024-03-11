@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using PartiesApi.DTO.Party;
 using PartiesApi.Services.Party;
 using PartiesApi.Utils;
@@ -76,6 +77,10 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
 
             return Ok(result);
         }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
+        }
         catch (Exception e)
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -98,6 +103,10 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
 
             return Ok(result);
         }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
+        }
         catch (Exception e)
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -118,6 +127,10 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
                 return BadRequest(result);
 
             return Ok(result);
+        }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
         }
         catch (Exception e)
         {
@@ -141,6 +154,10 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
 
             return Ok(result);
         }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
+        }
         catch (Exception e)
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -162,6 +179,10 @@ public class PartyController(IPartyService partyService, UserIdReader userIdRead
                 return BadRequest(result);
 
             return Ok(result);
+        }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
         }
         catch (Exception e)
         {

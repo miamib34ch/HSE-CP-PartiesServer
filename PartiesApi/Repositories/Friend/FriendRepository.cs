@@ -89,7 +89,9 @@ internal class FriendRepository(ApplicationDbContext dbContext) : IFriendReposit
                 .Include(user => user.SentRequests)
                 .ThenInclude(friendRequest => friendRequest.ToUser)
                 .Include(user => user.SentFriends)
+                .ThenInclude(friendUser => friendUser.SecondUser)
                 .Include(user => user.ReceivedFriends)
+                .ThenInclude(friendUser => friendUser.FirstUser)
                 .FirstOrDefaultAsync();
 
             if (user == null)

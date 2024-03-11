@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PartiesApi.Models;
+using Microsoft.IdentityModel.Tokens;
 using PartiesApi.Services.Friend;
 using PartiesApi.Utils;
 
@@ -31,6 +31,10 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
 
             return Ok(result);
         }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
+        }
         catch (Exception e)
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -52,6 +56,10 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
                 return BadRequest(result);
 
             return Ok(result);
+        }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
         }
         catch (Exception e)
         {
@@ -75,6 +83,10 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
 
             return Ok(result);
         }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
+        }
         catch (Exception e)
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -96,6 +108,10 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
                 return BadRequest(result);
 
             return Ok(result);
+        }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
         }
         catch (Exception e)
         {
@@ -119,6 +135,10 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
 
             return Ok(result);
         }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
+        }
         catch (Exception e)
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
@@ -134,12 +154,16 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
         try
         {
             var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await friendService.RejectFriendRequestsAsync(userId, fromUserId);
+            var result = await friendService.RejectFriendRequestAsync(userId, fromUserId);
 
             if (!result.IsSuccess)
                 return BadRequest(result);
 
             return Ok(result);
+        }
+        catch (SecurityTokenExpiredException e)
+        {
+            return StatusCode(StatusCodes.Status401Unauthorized);
         }
         catch (Exception e)
         {

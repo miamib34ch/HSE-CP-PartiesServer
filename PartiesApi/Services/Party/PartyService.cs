@@ -54,7 +54,7 @@ internal class PartyService(IPartyRepository partyRepository, IDressCodeReposito
             if (existingParty == null)
                 return new MethodResult(methodName, false, $"Party with Id {partyRequest.Id} does not exist");
 
-            var canUserEditParty = existingParty.Organizer.Id != userId
+            var canUserEditParty = existingParty.Organizer.Id == userId
                                    || existingParty.PartyEditors.Select(editor => editor.Id).Contains(userId);
             if (!canUserEditParty)
                 return new MethodResult(methodName, false, $"This party is not yours. You can't edit it!");
