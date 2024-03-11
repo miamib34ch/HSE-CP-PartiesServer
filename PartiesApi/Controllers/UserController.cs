@@ -23,7 +23,8 @@ public class UserController(IUserService userService, UserIdReader userIdReader)
     {
         try
         {
-            var result = await userService.FindUsersAsync(userLogin);
+            var userId = userIdReader.GetUserIdFromAuth(HttpContext);
+            var result = await userService.FindUsersAsync(userId, userLogin);
 
             if (!result.IsSuccess)
                 return BadRequest(result);

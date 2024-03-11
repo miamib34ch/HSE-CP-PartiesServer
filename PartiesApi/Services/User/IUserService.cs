@@ -10,5 +10,5 @@ public interface IUserService
     Task<UserResponse?> CreateUserAsync(string login, string password);
     Task<UserResponse?> GetUserOrDefaultAsync(Guid userId);
     Task<UserResponse?> GetUserOrDefaultAsync(string userLogin);
-    Task<MethodResult<IEnumerable<UserResponse>>> FindUsersAsync(string userLogin);
+    Task<MethodResult<IEnumerable<UserWithFriendStatusResponse>>> FindUsersAsync(Guid userId, string userLogin);
 }

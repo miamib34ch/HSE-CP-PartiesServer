@@ -44,6 +44,8 @@ internal class UserRepository(ApplicationDbContext dbContext) : IUserRepository
             var user = await dbContext.Users
                 .Include(user => user.SentFriends)
                 .Include(user => user.ReceivedFriends)
+                .Include(user => user.SentRequests)
+                .Include(user => user.ReceivedRequests)
                 .FirstOrDefaultAsync(user => user.Id == userId);
 
             return user;

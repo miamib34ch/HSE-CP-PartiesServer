@@ -37,7 +37,7 @@ internal class UserService(IUserRepository userRepository, IMapper mapper) : IUs
 
         if (createdUser == null)
             return null;
-            
+
         var userResponse = mapper.Map<Models.User, UserResponse>(createdUser);
 
         return userResponse;
@@ -49,7 +49,7 @@ internal class UserService(IUserRepository userRepository, IMapper mapper) : IUs
 
         if (user == null)
             return null;
-            
+
         var userResponse = mapper.Map<Models.User, UserResponse>(user);
 
         return userResponse;
@@ -61,29 +61,57 @@ internal class UserService(IUserRepository userRepository, IMapper mapper) : IUs
 
         if (user == null)
             return null;
-            
+
         var userResponse = mapper.Map<Models.User, UserResponse>(user);
 
         return userResponse;
     }
 
-    public async Task<MethodResult<IEnumerable<UserResponse>>> FindUsersAsync(string userLogin)
+    public async Task<MethodResult<IEnumerable<UserWithFriendStatusResponse>>> FindUsersAsync(Guid userId,
+        string userLogin)
     {
         const string methodName = "FindUsers";
 
         try
         {
-            var users = await userRepository.FindUsersAsync(userLogin);
+            var userResponses = new List<UserWithFriendStatusResponse>();
+            var foundUsers = await userRepository.FindUsersAsync(userLogin);
+            var user = await userRepository.GetUserOrDefaultAsync(userId);
 
-            var userRequests =
-                users.Select(mapper.Map<Models.User, UserResponse>).ToList();
-            
-            return new MethodResult<IEnumerable<UserResponse>>(methodName, true,
-                string.Empty, userRequests);
+            foreach (var foundUser in foundUsers)
+            {
+                var userResponse = new UserWithFriendStatusResponse()
+                {
+                    Id = foundUser.Id,
+                    Login = foundUser.Login,
+                    FriendStatus = FriendStatus.NotFriend
+                };
+
+                var isFoundUserFriend = user != null && user.Friends.Any(friend =>
+                    friend.FirstUserId == foundUser.Id || friend.SecondUserId == foundUser.Id);
+                if (isFoundUserFriend)
+                    userResponse.FriendStatus = FriendStatus.Friend;
+
+                var isRequestSent = user != null &&
+                                    user.SentRequests.Any(friendRequest => friendRequest.ToUserId == foundUser.Id);
+                if (isRequestSent)
+                    userResponse.FriendStatus = FriendStatus.RequestSent;
+
+                var isRequestReceived = user != null &&
+                                        user.ReceivedRequests.Any(friendRequest =>
+                                            friendRequest.FromUserId == foundUser.Id);
+                if (isRequestReceived)
+                    userResponse.FriendStatus = FriendStatus.RequestReceived;
+
+                userResponses.Add(userResponse);
+            }
+
+            return new MethodResult<IEnumerable<UserWithFriendStatusResponse>>(methodName, true,
+                string.Empty, userResponses);
         }
         catch (Exception ex)
         {
-            return new MethodResult<IEnumerable<UserResponse>>(methodName, false, $"Unknown error");
+            return new MethodResult<IEnumerable<UserWithFriendStatusResponse>>(methodName, false, $"Unknown error");
         }
     }
 }

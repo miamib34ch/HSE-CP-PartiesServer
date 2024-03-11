@@ -26,7 +26,8 @@ internal class AuthService(IUserService userService, IJwtService jwtService) : I
         var successAuthResult = new AuthResult()
         {
             IsSuccess = true,
-            AccessToken = token
+            AccessToken = token,
+            UserId = createdUser.Id
         };
 
         return successAuthResult;
@@ -55,7 +56,8 @@ internal class AuthService(IUserService userService, IJwtService jwtService) : I
         var successAuthResult = new AuthResult()
         {
             IsSuccess = true,
-            AccessToken = token
+            AccessToken = token,
+            UserId = user.Id
         };
 
         return successAuthResult;

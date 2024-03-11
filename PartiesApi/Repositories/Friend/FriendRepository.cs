@@ -66,6 +66,7 @@ internal class FriendRepository(ApplicationDbContext dbContext) : IFriendReposit
             var receivedRequestsAsync = await dbContext.FriendRequests
                 .Where(request => request.ToUserId == userId)
                 .Include(request => request.FromUser)
+                .Include(request => request.ToUser)
                 .ToListAsync();
 
             return receivedRequestsAsync;
