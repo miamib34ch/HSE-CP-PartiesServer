@@ -38,28 +38,6 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
     }
 
     /// <summary>
-    /// Получение отправленных заявок, на которые еще не ответили или отклонили
-    /// </summary>
-    [HttpGet("SentFriendRequests")]
-    public async Task<IActionResult> GetSentFriendRequestsAsync()
-    {
-        try
-        {
-            var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await friendService.GetSentFriendRequestsAsync(userId);
-
-            if (!result.IsSuccess)
-                return BadRequest(result);
-
-            return Ok(result);
-        }
-        catch (Exception e)
-        {
-            return StatusCode(StatusCodes.Status500InternalServerError);
-        }
-    }
-
-    /// <summary>
     /// Получение полученных заявок, на которые еще не ответили
     /// </summary>
     [HttpGet("ReceivedFriendRequests")]
@@ -104,6 +82,28 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
     }
     
     /// <summary>
+    /// Удаление пользователя из друзей
+    /// </summary>
+    [HttpDelete("DeleteFriend")]
+    public async Task<IActionResult> DeleteFriendAsync([FromQuery] Guid friendId)
+    {
+        try
+        {
+            var userId = userIdReader.GetUserIdFromAuth(HttpContext);
+            var result = await friendService.DeleteUserFromFriendsAsync(userId, friendId);
+
+            if (!result.IsSuccess)
+                return BadRequest(result);
+
+            return Ok(result);
+        }
+        catch (Exception e)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
+    }
+    
+    /// <summary>
     /// Принятие заявки в друзья
     /// </summary>
     [HttpPatch("AcceptRequest")]
@@ -112,7 +112,7 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
         try
         {
             var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await friendService.ChangeFriendRequestStatusAsync(userId, fromUserId, FriendRequestStatus.Approved);
+            var result = await friendService.AcceptFriendRequestAsync(userId, fromUserId);
 
             if (!result.IsSuccess)
                 return BadRequest(result);
@@ -134,7 +134,7 @@ public class FriendController(IFriendService friendService, UserIdReader userIdR
         try
         {
             var userId = userIdReader.GetUserIdFromAuth(HttpContext);
-            var result = await friendService.ChangeFriendRequestStatusAsync(userId, fromUserId, FriendRequestStatus.Rejected);
+            var result = await friendService.RejectFriendRequestsAsync(userId, fromUserId);
 
             if (!result.IsSuccess)
                 return BadRequest(result);

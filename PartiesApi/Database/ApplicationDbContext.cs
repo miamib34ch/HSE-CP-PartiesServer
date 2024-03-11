@@ -45,5 +45,20 @@ internal class ApplicationDbContext : DbContext
 
         modelBuilder.Entity<Party>()
             .HasOne(e => e.Organizer);
+
+        modelBuilder.Entity<UserFriend>()
+            .HasKey(uf => new { uf.FirstUserId, uf.SecondUserId });
+
+        modelBuilder.Entity<UserFriend>()
+            .HasOne(uf => uf.FirstUser)
+            .WithMany(u => u.SentFriends)
+            .HasForeignKey(uf => uf.FirstUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+        
+        modelBuilder.Entity<UserFriend>()
+            .HasOne(uf => uf.SecondUser)
+            .WithMany(u => u.ReceivedFriends)
+            .HasForeignKey(uf => uf.SecondUserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

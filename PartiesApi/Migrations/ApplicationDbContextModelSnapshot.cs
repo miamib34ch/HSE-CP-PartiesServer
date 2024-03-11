@@ -47,9 +47,6 @@ namespace PartiesApi.Migrations
                     b.Property<Guid>("ToUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
                     b.HasKey("FromUserId", "ToUserId");
 
                     b.HasIndex("ToUserId");
@@ -133,6 +130,21 @@ namespace PartiesApi.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("PartiesApi.Models.UserFriend", b =>
+                {
+                    b.Property<Guid>("FirstUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SecondUserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("FirstUserId", "SecondUserId");
+
+                    b.HasIndex("SecondUserId");
+
+                    b.ToTable("UserFriend");
+                });
+
             modelBuilder.Entity("PartyPartyRule", b =>
                 {
                     b.Property<Guid>("PartiesId")
@@ -214,6 +226,25 @@ namespace PartiesApi.Migrations
                     b.Navigation("Organizer");
                 });
 
+            modelBuilder.Entity("PartiesApi.Models.UserFriend", b =>
+                {
+                    b.HasOne("PartiesApi.Models.User", "FirstUser")
+                        .WithMany("Friends")
+                        .HasForeignKey("FirstUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("PartiesApi.Models.User", "SecondUser")
+                        .WithMany()
+                        .HasForeignKey("SecondUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("FirstUser");
+
+                    b.Navigation("SecondUser");
+                });
+
             modelBuilder.Entity("PartyPartyRule", b =>
                 {
                     b.HasOne("PartiesApi.Models.Party", null)
@@ -261,6 +292,8 @@ namespace PartiesApi.Migrations
 
             modelBuilder.Entity("PartiesApi.Models.User", b =>
                 {
+                    b.Navigation("Friends");
+
                     b.Navigation("ReceivedRequests");
 
                     b.Navigation("SentRequests");

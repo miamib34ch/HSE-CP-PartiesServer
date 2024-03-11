@@ -18,7 +18,6 @@ internal class AutoMappingProfile : Profile
         CreateMap<PartyRule, PartyRuleResponse>();
         CreateMap<PartyRuleRequest, PartyRule>();
         CreateMap<Party, PartyResponse>();
-        CreateMap<FriendRequest, SentFriendRequestResponse>();
         CreateMap<FriendRequest, ReceivedFriendRequestResponse>();
     }
 }

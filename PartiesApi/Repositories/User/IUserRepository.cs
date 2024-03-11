@@ -6,4 +6,5 @@ internal interface IUserRepository
     Task<Models.User?> AddUserAsync(Models.User user);
     Task<Models.User?> GetUserOrDefaultAsync(Guid userId);
     Task<IEnumerable<Models.User>> FindUsersAsync(string userLogin);
+    bool UpdateUser(Models.User user);
 }

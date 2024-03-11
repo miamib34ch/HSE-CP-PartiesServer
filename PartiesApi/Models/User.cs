@@ -12,17 +12,15 @@ internal class User
     public virtual IList<Party> EditorParties { get; set; }
     public virtual IList<FriendRequest> SentRequests { get; set; }
     public virtual IList<FriendRequest> ReceivedRequests { get; set; }
+    public virtual IList<UserFriend> SentFriends { get; set; }
+    public virtual IList<UserFriend> ReceivedFriends { get; set; }
 
     [NotMapped]
-    public virtual IList<User> Friends
+    public IEnumerable<UserFriend> Friends => SentFriends.Union(ReceivedFriends);
+
+    public void RemoveFriend(UserFriend userFriend)
     {
-        get
-        {
-            var friends = SentRequests.Where(r => r.Status == FriendRequestStatus.Approved).Select(r => r.ToUser)
-                .ToList();
-            friends.AddRange(ReceivedRequests.Where(r => r.Status == FriendRequestStatus.Approved)
-                .Select(r => r.FromUser));
-            return friends;
-        }
+        SentFriends.Remove(userFriend);
+        ReceivedFriends.Remove(userFriend);
     }
 }

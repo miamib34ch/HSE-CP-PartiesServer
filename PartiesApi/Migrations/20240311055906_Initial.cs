@@ -55,8 +55,7 @@ namespace PartiesApi.Migrations
                 columns: table => new
                 {
                     FromUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ToUserId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    ToUserId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -100,6 +99,30 @@ namespace PartiesApi.Migrations
                     table.ForeignKey(
                         name: "FK_Parties_Users_OrganizerId",
                         column: x => x.OrganizerId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserFriend",
+                columns: table => new
+                {
+                    FirstUserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SecondUserId = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserFriend", x => new { x.FirstUserId, x.SecondUserId });
+                    table.ForeignKey(
+                        name: "FK_UserFriend_Users_FirstUserId",
+                        column: x => x.FirstUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserFriend_Users_SecondUserId",
+                        column: x => x.SecondUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -206,6 +229,11 @@ namespace PartiesApi.Migrations
                 name: "IX_PartyPartyRule_PartyRulesId",
                 table: "PartyPartyRule",
                 column: "PartyRulesId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserFriend_SecondUserId",
+                table: "UserFriend",
+                column: "SecondUserId");
         }
 
         /// <inheritdoc />
@@ -222,6 +250,9 @@ namespace PartiesApi.Migrations
 
             migrationBuilder.DropTable(
                 name: "PartyPartyRule");
+
+            migrationBuilder.DropTable(
+                name: "UserFriend");
 
             migrationBuilder.DropTable(
                 name: "Parties");

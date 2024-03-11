@@ -1,8 +1,6 @@
 using AutoMapper;
 using PartiesApi.DTO;
-using PartiesApi.DTO.FriendRequest;
 using PartiesApi.DTO.User;
-using PartiesApi.Models;
 using PartiesApi.Repositories.User;
 using PartiesApi.Utils;
 

@@ -47,7 +47,7 @@ internal class FriendRepository(ApplicationDbContext dbContext) : IFriendReposit
         try
         {
             var sentFriendRequests = await dbContext.FriendRequests
-                .Where(request => request.FromUserId == userId && request.Status != FriendRequestStatus.Approved)
+                .Where(request => request.FromUserId == userId)
                 .Include(request => request.ToUser)
                 .ToListAsync();
 
@@ -64,7 +64,7 @@ internal class FriendRepository(ApplicationDbContext dbContext) : IFriendReposit
         try
         {
             var receivedRequestsAsync = await dbContext.FriendRequests
-                .Where(request => request.ToUserId == userId && request.Status != FriendRequestStatus.Approved)
+                .Where(request => request.ToUserId == userId)
                 .Include(request => request.FromUser)
                 .ToListAsync();
 
@@ -76,33 +76,6 @@ internal class FriendRepository(ApplicationDbContext dbContext) : IFriendReposit
         }
     }
 
-    public async Task<bool> ChangeFriendRequestStatusAsync(Guid userId, Guid fromUserId,
-        FriendRequestStatus friendRequestStatus)
-    {
-        try
-        {
-            var friendRequest = await dbContext.FriendRequests
-                .Where(request => request.FromUserId == fromUserId && request.ToUserId == userId)
-                .FirstOrDefaultAsync();
-
-            if (friendRequest == null)
-                return false;
-
-            friendRequest.Status = friendRequestStatus;
-
-            var updatedRequest = dbContext.FriendRequests.Update(friendRequest);
-
-            return updatedRequest.State == EntityState.Modified;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-        finally
-        {
-            await dbContext.SaveChangesAsync();
-        }
-    }
 
     public async Task<IEnumerable<Models.User>> GetFriendsAsync(Guid userId)
     {
@@ -114,13 +87,44 @@ internal class FriendRepository(ApplicationDbContext dbContext) : IFriendReposit
                 .ThenInclude(friendRequest => friendRequest.FromUser)
                 .Include(user => user.SentRequests)
                 .ThenInclude(friendRequest => friendRequest.ToUser)
+                .Include(user => user.SentFriends)
+                .Include(user => user.ReceivedFriends)
                 .FirstOrDefaultAsync();
 
-            return user != null ? user.Friends : new List<Models.User>();
+            if (user == null)
+                return new List<Models.User>();
+
+            var sentFriends = user.SentFriends
+                .Where(userFriend => userFriend.FirstUserId == userId)
+                .Select(userFriend => userFriend.SecondUser);
+            
+            var receivedFriends = user.ReceivedFriends
+                .Where(userFriend => userFriend.SecondUserId == userId)
+                .Select(userFriend => userFriend.FirstUser);
+
+            return sentFriends.Union(receivedFriends);
         }
         catch (Exception e)
         {
             return new List<Models.User>();
+        }
+    }
+
+    public bool RemoveFriendRequest(FriendRequest friendRequest)
+    {
+        try
+        {
+            var removedEntity = dbContext.FriendRequests.Remove(friendRequest);
+
+            return removedEntity.State == EntityState.Deleted;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        finally
+        {
+            dbContext.SaveChanges();
         }
     }
 }

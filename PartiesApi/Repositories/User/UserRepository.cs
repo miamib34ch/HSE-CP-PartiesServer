@@ -41,7 +41,10 @@ internal class UserRepository(ApplicationDbContext dbContext) : IUserRepository
     {
         try
         {
-            var user = await dbContext.Users.FirstOrDefaultAsync(user => user.Id == userId);
+            var user = await dbContext.Users
+                .Include(user => user.SentFriends)
+                .Include(user => user.ReceivedFriends)
+                .FirstOrDefaultAsync(user => user.Id == userId);
 
             return user;
         }
@@ -62,6 +65,24 @@ internal class UserRepository(ApplicationDbContext dbContext) : IUserRepository
         catch (Exception e)
         {
             return Enumerable.Empty<Models.User>();
+        }
+    }
+
+    public bool UpdateUser(Models.User user)
+    {
+        try
+        {
+            var updatedUser = dbContext.Users.Update(user);
+
+            return updatedUser.State == EntityState.Modified;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        finally
+        {
+            dbContext.SaveChanges();
         }
     }
 }

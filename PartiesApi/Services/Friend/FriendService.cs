@@ -4,10 +4,12 @@ using PartiesApi.DTO.FriendRequest;
 using PartiesApi.DTO.User;
 using PartiesApi.Models;
 using PartiesApi.Repositories.Friend;
+using PartiesApi.Repositories.User;
 
 namespace PartiesApi.Services.Friend;
 
-internal class FriendService(IFriendRepository friendRepository, IMapper mapper) : IFriendService
+internal class FriendService
+    (IFriendRepository friendRepository, IUserRepository userRepository, IMapper mapper) : IFriendService
 {
     public async Task<MethodResult> SendFriendRequestAsync(Guid userId, Guid friendRequestId)
     {
@@ -23,7 +25,6 @@ internal class FriendService(IFriendRepository friendRepository, IMapper mapper)
             {
                 FromUserId = userId,
                 ToUserId = friendRequestId,
-                Status = FriendRequestStatus.None
             };
 
             var friendRequestCreated = await friendRepository.AddFriendRequestAsync(newFriendRequest);
@@ -36,27 +37,8 @@ internal class FriendService(IFriendRepository friendRepository, IMapper mapper)
         }
     }
 
-    public async Task<MethodResult<IEnumerable<SentFriendRequestResponse>>> GetSentFriendRequestsAsync(Guid userId)
-    {
-        const string methodName = "SendFriendRequest";
-
-        try
-        {
-            var sentRequests = await friendRepository.GetSentFriendRequestsAsync(userId);
-
-            var sentRequestResponses =
-                sentRequests.Select(mapper.Map<FriendRequest, SentFriendRequestResponse>).ToList();
-
-            return new MethodResult<IEnumerable<SentFriendRequestResponse>>(methodName, true,
-                string.Empty, sentRequestResponses);
-        }
-        catch (Exception ex)
-        {
-            return new MethodResult<IEnumerable<SentFriendRequestResponse>>(methodName, false, $"Unknown error");
-        }
-    }
-
-    public async Task<MethodResult<IEnumerable<ReceivedFriendRequestResponse>>> GetReceivedFriendRequestsAsync(Guid userId)
+    public async Task<MethodResult<IEnumerable<ReceivedFriendRequestResponse>>>
+        GetReceivedFriendRequestsAsync(Guid userId)
     {
         const string methodName = "ReceivedFriendRequest";
 
@@ -76,27 +58,6 @@ internal class FriendService(IFriendRepository friendRepository, IMapper mapper)
         }
     }
 
-    public async Task<MethodResult> ChangeFriendRequestStatusAsync(Guid userId, Guid fromUserId,
-        FriendRequestStatus friendRequestStatus)
-    {
-        const string methodName = "ChangeFriendRequestStatus";
-
-        try
-        {
-            var existingRequest = await friendRepository.GetFriendRequestOrDefaultAsync(fromUserId, userId);
-            if (existingRequest == null)
-                return new MethodResult(methodName, false, $"You don't have request from user with Id {fromUserId}");
-            
-            var requestAccepted = await friendRepository.ChangeFriendRequestStatusAsync(userId, fromUserId, friendRequestStatus);
-            
-            return new MethodResult(methodName, requestAccepted, string.Empty);
-        }
-        catch (Exception ex)
-        {
-            return new MethodResult(methodName, false, $"Unknown error");
-        }
-    }
-
     public async Task<MethodResult<IEnumerable<UserResponse>>> GetFriendsAsync(Guid userId)
     {
         const string methodName = "GetFriendsAsync";
@@ -113,5 +74,83 @@ internal class FriendService(IFriendRepository friendRepository, IMapper mapper)
         {
             return new MethodResult<IEnumerable<UserResponse>>(methodName, false, $"Unknown error");
         }
+    }
+
+    public async Task<MethodResult> DeleteUserFromFriendsAsync(Guid userId, Guid friendId)
+    {
+        const string methodName = "DeleteUserFromFriends";
+
+        try
+        {
+            var user = await userRepository.GetUserOrDefaultAsync(userId);
+
+            if (user == null)
+                return new MethodResult(methodName, false, "User does not exist");
+
+            var userFriend = user.Friends.FirstOrDefault(friendUser => 
+                (friendUser.FirstUserId == userId && friendUser.SecondUserId == friendId) || (friendUser.FirstUserId == friendId && friendUser.SecondUserId == userId));
+
+            if (userFriend == null)
+                return new MethodResult(methodName, false, "User is not your friend");
+
+            user.RemoveFriend(userFriend);
+
+            var isUserUpdated = userRepository.UpdateUser(user);
+
+            return new MethodResult<IEnumerable<UserResponse>>(methodName, isUserUpdated, string.Empty);
+        }
+        catch (Exception ex)
+        {
+            return new MethodResult<IEnumerable<UserResponse>>(methodName, false, $"Unknown error");
+        }
+    }
+
+    public async Task<MethodResult> AcceptFriendRequestAsync(Guid userId, Guid fromUserId)
+    {
+        const string methodName = "AcceptFriendRequest";
+
+        try
+        {
+            var friendRequests = await friendRepository.GetReceivedFriendRequestsAsync(userId);
+
+            var friendRequest = friendRequests.FirstOrDefault(request =>
+                request.ToUserId == userId && request.FromUserId == fromUserId);
+            if (friendRequest == null)
+                return new MethodResult(methodName, false, "You do not have request from this user");
+
+            var friendUser = await userRepository.GetUserOrDefaultAsync(fromUserId);
+            if (friendUser == null)
+                return new MethodResult(methodName, false, "friendUser does not exist");
+
+            var user = await userRepository.GetUserOrDefaultAsync(userId);
+            if (user == null)
+                return new MethodResult(methodName, false, "User does not exist");
+
+            var userFriend = new UserFriend()
+            {
+                FirstUser = friendUser,
+                FirstUserId = fromUserId,
+                SecondUser = user,
+                SecondUserId = userId
+            };
+
+            user.ReceivedFriends.Add(userFriend);
+
+            var friendAdded = userRepository.UpdateUser(user);
+
+            var isFriendRequestRemoved = friendRepository.RemoveFriendRequest(friendRequest);
+
+            return new MethodResult<IEnumerable<UserResponse>>(methodName, friendAdded && isFriendRequestRemoved,
+                string.Empty);
+        }
+        catch (Exception ex)
+        {
+            return new MethodResult<IEnumerable<UserResponse>>(methodName, false, $"Unknown error");
+        }
+    }
+
+    public Task<MethodResult> RejectFriendRequestsAsync(Guid userId, Guid fromUserId)
+    {
+        throw new NotImplementedException();
     }
 }
